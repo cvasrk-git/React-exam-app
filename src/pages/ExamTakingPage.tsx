@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import styles from "../styles/PageStyles.module.css";
 import QuestionCard from "../components/QuestionCard";
+
+const API_BASE_URL = "http://localhost:5000"; // Update your backend URL
 
 const ExamTakingPage: React.FC = () => {
   const location = useLocation();
@@ -29,7 +32,18 @@ const ExamTakingPage: React.FC = () => {
   const nextQuestion = () => setCurrentQuestion(prev => Math.min(prev + 1, questions.length - 1));
   const prevQuestion = () => setCurrentQuestion(prev => Math.max(prev - 1, 0));
 
-  const submitExam = () => navigate("/results", { state: { answers, questions } });
+  const submitExam = async () => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/validate_answers`, {
+        answers,
+        questions,
+      });
+      
+      navigate("/results", { state: { answers, questions, validation: response.data.validation } });
+    } catch (error) {
+      console.error("Error submitting exam:", error);
+    }
+  };
 
   return (
     <div className={styles.pageContainer}>
