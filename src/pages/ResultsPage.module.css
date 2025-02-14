@@ -1,0 +1,17 @@
+.container {
+    text-align: center;
+    padding: 40px;
+  }
+  
+  h2 {
+    font-size: 24px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    background: #28a745;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
