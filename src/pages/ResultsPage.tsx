@@ -66,7 +66,7 @@ const ResultsPage: React.FC = () => {
         </h3>
 
         <button className={styles.button} onClick={() => setShowDetails(!showDetails)}>
-          {showDetails ? "Hide Detailed Results" : "View Detailed Results"}
+          {showDetails ? "Hide Results" : "View Results"}
         </button>
 
         {/* Wrapper for maintaining structure even when table is hidden */}

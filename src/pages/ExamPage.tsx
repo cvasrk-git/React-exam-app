@@ -118,6 +118,7 @@ const ExamPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id: "test_user",
+          name: "Cva", // Ensure this is included
           answers: answers,
           questions: questions,
         }),
