@@ -1,82 +1,85 @@
+/* ✅ FULL SCREEN BACKGROUND */
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to right, #3e8477, #7c88bf);
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* ✅ PAGE CONTAINER */
 .pageContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  height: 100vh; /* Full screen height */
-  overflow: hidden; /* Prevent body scroll */
-  padding: 20px;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  text-align: center;
 }
 
-/* 🎯 Keeps content centered when results are hidden */
-.resultsContainer {
+/* ✅ FIXED SIZE RESULT CARD */
+.cardContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 600px; /* Prevents stretching on large screens */
+  justify-content: space-between;
+  width: 90%;
+  max-width: 600px;
+  height: auto; /* ✅ Dynamic height */
+  min-height: 300px; /* ✅ Minimum height to prevent shrinking */
+  background: #fff;
   padding: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  position: relative;
+  transition: height 0.3s ease-in-out; /* ✅ Smooth transition */
 }
 
-/* 🔹 Keeps layout stable even if results are hidden */
-.resultsWrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  transition: max-height 0.3s ease-in-out;
-}
-
-/* 🟢 Scrollable results area */
-.scrollContainer {
-  width: 100%;
-  max-height: 60vh; /* Limits table height */
-  overflow-y: auto; /* Enables scrolling */
-  border: 1px solid #ddd;
-  padding: 10px;
-}
-
-/* 🏆 Title Styling */
+/* ✅ TITLE */
 .title {
   font-size: 24px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   color: #333;
 }
 
-/* 🔹 Buttons */
-.button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
+/* ✅ GRADE TEXT */
+.grade {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
 }
 
-.button:hover {
-  background-color: #0056b3;
-}
-
-/* 🎯 Table Styling */
-.tableContainer {
+/* ✅ RESULTS CONTAINER */
+.resultsWrapper {
   width: 100%;
-  overflow-x: auto;
-  margin-top: 20px;
+  max-height: 300px; /* ✅ Limit height */
+  overflow-y: auto; /* ✅ Scroll when needed */
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-top: 10px;
 }
 
+/* 🔹 Completely remove results when hidden */
+.resultsWrapper.hidden {
+  display: none;
+}
+
+/* ✅ RESULTS TABLE */
 .resultsTable {
   width: 100%;
   border-collapse: collapse;
 }
 
-.resultsTable th,
-.resultsTable td {
+.resultsTable th, .resultsTable td {
   padding: 10px;
   border: 1px solid #ccc;
   text-align: left;
@@ -97,55 +100,53 @@
   background-color: #ddd;
 }
 
-/* ✅ Correct answers - Green Row */
+/* ✅ CORRECT & INCORRECT ANSWERS */
 .correctRow td {
   background-color: #d4edda !important;
   color: #155724;
   font-weight: bold;
 }
 
-/* ❌ Incorrect answers - Red Row */
 .wrongRow td {
   background-color: #f8d7da !important;
   color: #721c24;
   font-weight: bold;
 }
 
-/* 🎯 Responsive Design */
+/* ✅ BUTTON CONTAINER */
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* ✅ BUTTON STYLING */
+.button {
+  background: linear-gradient(to right, #007bff, #00c851);
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.button:disabled {
+  background: gray;
+  cursor: not-allowed;
+}
+
+.button:hover {
+  transform: scale(1.05);
+}
+
+/* ✅ RESPONSIVE FIX */
 @media screen and (max-width: 768px) {
   .resultsTable th, .resultsTable td {
     font-size: 14px;
     padding: 8px;
   }
-}
-
-/* ✅ General Result Styling */
-.resultItem {
-  background: #fff;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 5px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: left;
-}
-
-/* ✅ Correct Answer Text */
-.correct {
-  color: green;
-  font-weight: bold;
-}
-
-/* ❌ Wrong Answer Text */
-.wrong {
-  color: red;
-  font-weight: bold;
-}
-
-/* 🌈 Background */
-body {
-  background: linear-gradient(to right, #3e8477, #7c88bf);
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  height: 100vh;
 }

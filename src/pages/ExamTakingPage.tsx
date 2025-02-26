@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "../styles/PageStyles.module.css";
 import QuestionCard from "../components/QuestionCard";
 
-const API_BASE_URL = "http://localhost:5000"; // Update your backend URL
+const API_BASE_URL = "http://localhost:5000"; // Update with your backend URL
 
 const ExamTakingPage: React.FC = () => {
   const location = useLocation();
@@ -14,13 +14,24 @@ const ExamTakingPage: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
 
-  if (questions.length === 0) {
+  useEffect(() => {
+    console.log("🔍 Questions received:", questions);
+    if (questions.length > 0) {
+      console.log("✅ First Question:", questions[0]); 
+    } else {
+      console.error("❌ No questions loaded!");
+    }
+  }, [questions]);
+
+  if (!questions || questions.length === 0) {
     return (
       <div className={styles.pageContainer}>
-        <h2 className={styles.title}>❗ No Questions Found</h2>
-        <button className={styles.button} onClick={() => navigate("/")}>
-          Go Back
-        </button>
+        <div className={styles.cardContainer}>
+          <h2 className={styles.title}>❗ No Questions Found</h2>
+          <button className={styles.button} onClick={() => navigate("/")}>
+            Go Back
+          </button>
+        </div>
       </div>
     );
   }
@@ -38,32 +49,38 @@ const ExamTakingPage: React.FC = () => {
         answers,
         questions,
       });
-      
+
       navigate("/results", { state: { answers, questions, validation: response.data.validation } });
     } catch (error) {
-      console.error("Error submitting exam:", error);
+      console.error("🚨 Error submitting exam:", error);
+      alert("⚠️ Submission failed. Please try again.");
     }
   };
 
   return (
     <div className={styles.pageContainer}>
-      <h2 className={styles.title}>Exam in Progress</h2>
-      <QuestionCard 
-        question={questions[currentQuestion]}
-        selectedAnswer={answers[currentQuestion]}
-        onSelectAnswer={handleAnswer}
-      />
-
-      <button className={styles.button} onClick={prevQuestion} disabled={currentQuestion === 0}>
-        Previous
-      </button>
-      {currentQuestion < questions.length - 1 ? (
-        <button className={styles.button} onClick={nextQuestion}>Next</button>
-      ) : (
-        <button className={styles.button} onClick={submitExam}>Submit</button>
-      )}
+      <div className={styles.cardContainer}>
+        <h2 className={styles.title}>Exam in Progress</h2>
+        <QuestionCard 
+          question={questions[currentQuestion]}
+          selectedAnswer={answers[currentQuestion] || ""}
+          onSelectAnswer={handleAnswer}
+        />
+  
+        <div className={styles.buttonContainer}>
+          {currentQuestion > 0 && (
+            <button className={styles.button} onClick={prevQuestion}>Previous</button>
+          )}
+          {currentQuestion < questions.length - 1 && (
+            <button className={styles.button} onClick={nextQuestion}>Next</button>
+          )}
+          {currentQuestion === questions.length - 1 && (
+            <button className={styles.button} onClick={submitExam}>Submit</button>
+          )}
+        </div>
+      </div>
     </div>
-  );
+  );  
 };
 
 export default ExamTakingPage;
