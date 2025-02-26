@@ -70,37 +70,37 @@ const ResultsPage: React.FC = () => {
         </button>
 
         {/* ✅ Remove results from layout when hidden */}
-<div className={`${styles.resultsWrapper} ${showDetails ? "" : styles.hidden}`}>
-  <table className={styles.resultsTable}>
-    <thead>
-      <tr>
-        <th>Question</th>
-        <th>Your Answer</th>
-        <th>Correct Answer</th>
-        <th>Result</th>
-      </tr>
-    </thead>
-    <tbody>
-      {questions.map((q) => {
-        const userAnswer = answers[q.id] || "No answer";
-        const correctAnswer = q.correct_answer || "No answer";
-        const result = validationResults[q.id]?.status || "Incorrect";
+        <div className={`${styles.resultsWrapper} ${showDetails ? "" : styles.hidden}`}>
+          <table className={styles.resultsTable}>
+            <thead>
+              <tr>
+                <th>Question</th>
+                <th>Your Answer</th>
+                <th>Correct Answer</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              {questions.map((q) => {
+                const userAnswer = answers[q.id] || "No answer";
+                const correctAnswer = q.correct_answer || "No answer";
+                const result = validationResults[q.id]?.status || "Incorrect";
 
-        return (
-          <tr
-            key={q.id}
-            className={result === "Correct" ? styles.correctRow : styles.wrongRow}
-          >
-            <td>{q.question}</td>
-            <td>{userAnswer}</td>
-            <td>{correctAnswer}</td>
-            <td>{result === "Correct" ? "✅ Correct" : "❌ Incorrect"}</td>
-          </tr>
-        );
-      })}
-    </tbody>
-  </table>
-</div>
+                return (
+                  <tr
+                    key={q.id}
+                    className={result === "Correct" ? styles.correctRow : styles.wrongRow}
+                  >
+                    <td>{q.question}</td>
+                    <td>{userAnswer}</td>
+                    <td>{correctAnswer}</td>
+                    <td>{result === "Correct" ? "✅ Correct" : "❌ Incorrect"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
 
         <button className={styles.button} onClick={() => navigate("/")}>
           Retry Test
