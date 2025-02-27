@@ -1,159 +1,113 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Question from "../components/Question";
+import Layout from "../components/Layout";
+import styles from "../styles/LoginSuccess.module.css";
+
+interface Question {
+  id: number;
+  question: string;
+  options: string[];
+  type: string;
+  hint?: string;
+  time_limit: number;
+}
 
 const API_BASE_URL = "http://localhost:5000"; // Backend API URL
 
-const ExamPage = () => {
-  const navigate = useNavigate();
-  const [questions, setQuestions] = useState([]);
-  const [cachedQuestions, setCachedQuestions] = useState(null);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [timers, setTimers] = useState<Record<string, number>>({});
+const ExamPage: React.FC = () => {
+  const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [prompt, setPrompt] = useState("");
-  const [examStarted, setExamStarted] = useState(false);
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const navigate = useNavigate();
 
+  // Check authentication on component mount
   useEffect(() => {
-    if (!user.userId) {
-      navigate("/"); // Redirect to login if user not found
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
     }
-  }, [user, navigate]);
+  }, [navigate]);
 
-  const fetchQuestions = () => {
+  const fetchQuestions = async () => {
     if (!prompt.trim()) {
-      setError("❌ Please enter a test topic.");
-      return;
-    }
-
-    if (cachedQuestions) {
-      setQuestions(cachedQuestions);
-      setExamStarted(true);
+      setError("Please enter a test topic.");
       return;
     }
 
     setLoading(true);
     setError("");
 
-    fetch(`${API_BASE_URL}/generate_questions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt, user_id: user.userId }), // Include user_id
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data || !Array.isArray(data.questions)) {
-          throw new Error("❌ Invalid API response format");
-        }
-
-        setCachedQuestions(data.questions);
-        setQuestions(data.questions);
-        initializeTimers(data.questions);
-        setExamStarted(true);
-      })
-      .catch((err) => {
-        console.error("🚨 Error fetching questions:", err);
-        setError("⚠️ API error. Using fallback questions.");
-        setExamStarted(true);
-      })
-      .finally(() => setLoading(false));
-  };
-
-  const initializeTimers = (questionList) => {
-    const initialTimers = {};
-    questionList.forEach((q) => (initialTimers[q.id] = 30));
-    setTimers(initialTimers);
-  };
-
-  useEffect(() => {
-    if (!examStarted || !questions.length) return;
-
-    const questionId = questions[currentQuestionIndex]?.id;
-    if (!questionId) return;
-
-    const interval = setInterval(() => {
-      setTimers((prevTimers) => {
-        const newTimers = { ...prevTimers };
-        if (newTimers[questionId] > 0) {
-          newTimers[questionId] -= 1;
-        }
-        return newTimers;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [currentQuestionIndex, examStarted, questions]);
-
-  const handleSubmit = async () => {
-    if (Object.keys(answers).length === 0) {
-      alert("⚠️ You haven't answered any questions.");
-      return;
-    }
-
     try {
-      const response = await fetch(`${API_BASE_URL}/validate_answers`, {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await fetch(`${API_BASE_URL}/generate_questions`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: user.userId, // Include user_id
-          answers: answers,
-          questions: questions,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ prompt }),
       });
 
-      if (!response.ok) throw new Error(`❌ Server error: ${response.status}`);
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
 
-      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-      navigate("/results", {
-        state: { answers, questions, validation: result },
-      });
-    } catch (error) {
-      console.error("🚨 Submission Error:", error);
-      alert("⚠️ Submission failed. Please try again.");
+      const data = await response.json();
+      console.log("Received questions:", data); // Debug log
+
+      if (!data || !Array.isArray(data.questions)) {
+        throw new Error("Invalid API response format");
+      }
+
+      setQuestions(data.questions);
+      
+      // Navigate to exam taking page with questions
+      navigate("/exam", { state: { questions: data.questions } });
+    } catch (err) {
+      console.error("Error fetching questions:", err);
+      setError(err instanceof Error ? err.message : "Failed to generate questions. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
-
-  if (!examStarted) {
-    return (
-      <div style={{ textAlign: "center", marginTop: "100px" }}>
-        <h2>📝 Enter Your Test Topic</h2>
-        <textarea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Type your topic here..."
-          style={{ width: "400px", height: "60px", padding: "10px" }}
-        />
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button onClick={fetchQuestions} disabled={loading}>
-          {loading ? "⏳ Generating..." : "🚀 Start Exam"}
-        </button>
-      </div>
-    );
-  }
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <Question
-        id={questions[currentQuestionIndex]?.id || ""}
-        number={currentQuestionIndex + 1}
-        total={questions.length}
-        question={questions[currentQuestionIndex]}
-        setAnswers={setAnswers}
-        selectedAnswer={answers[questions[currentQuestionIndex]?.id] || ""}
-        timeLeft={timers[questions[currentQuestionIndex]?.id] || 30}
-      />
-      <button disabled={currentQuestionIndex === 0} onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}>
-        Previous
-      </button>
-      <button disabled={currentQuestionIndex === questions.length - 1} onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}>
-        Next
-      </button>
-      {currentQuestionIndex === questions.length - 1 && <button onClick={handleSubmit}>Submit</button>}
-    </div>
+    <Layout activeMenu="exam">
+      <div className={styles.welcomeCard}>
+        <h2>Start New Exam</h2>
+        <div className={styles.examSetup}>
+          <p className={styles.instruction}>
+            Enter the topic you would like to be tested on:
+          </p>
+          <textarea
+            className={styles.topicInput}
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Example: JavaScript Arrays and Objects..."
+            rows={4}
+          />
+          {error && <div className={styles.errorMessage}>{error}</div>}
+          <button 
+            className={`${styles.examButton} ${styles.primaryButton}`}
+            onClick={fetchQuestions}
+            disabled={loading}
+          >
+            {loading ? "Generating Questions..." : "Start Exam"}
+          </button>
+        </div>
+      </div>
+    </Layout>
   );
 };
 

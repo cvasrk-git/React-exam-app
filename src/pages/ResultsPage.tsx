@@ -1,112 +1,114 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import styles from "../styles/PageStyles.module.css";
+import Layout from "../components/Layout";
+import styles from "../styles/ResultsPage.module.css";
+
+interface ExamResult {
+  correct_answers: number;
+  grade: string;
+  score: number;
+  status: string;
+  subject: string;
+  total_questions: number;
+  user_id: string;
+}
 
 const ResultsPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const results = location.state?.results as ExamResult;
 
-  const state = location.state || {};
-  const answers = state.answers || {};
-  const questions = Array.isArray(state.questions) ? state.questions : [];
-  const validationResults = state.validation || {};
-
-  const [score, setScore] = useState(0);
-  const [grade, setGrade] = useState("");
-  const [showDetails, setShowDetails] = useState(false);
-
-  useEffect(() => {
-    if (questions.length === 0 || Object.keys(answers).length === 0) return;
-
-    let correctAnswers = 0;
-    const totalQuestions = questions.length;
-
-    questions.forEach((q) => {
-      const userAnswer = answers[q.id] || "";
-      const correctAnswer = q.correct_answer || "";
-
-      if (userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase()) {
-        correctAnswers += 1;
-        validationResults[q.id] = { status: "Correct" };
-      } else {
-        validationResults[q.id] = { status: "Incorrect" };
-      }
-    });
-
-    const accuracy = (correctAnswers / totalQuestions) * 100;
-    setScore(accuracy);
-
-    if (accuracy >= 90) setGrade("A+");
-    else if (accuracy >= 80) setGrade("A");
-    else if (accuracy >= 70) setGrade("B");
-    else if (accuracy >= 60) setGrade("C");
-    else if (accuracy >= 50) setGrade("D");
-    else setGrade("F");
-  }, [questions, answers, validationResults]);
-
-  if (questions.length === 0) {
+  if (!results) {
     return (
-      <div className={styles.pageContainer}>
-        <div className={styles.cardContainer}>
-          <h2 className={styles.title}>❗ No Results Available</h2>
-          <button className={styles.button} onClick={() => navigate("/")}>
-            Retry Exam
+      <Layout activeMenu="results">
+        <div className={styles.resultsContainer}>
+          <h2>No Results Available</h2>
+          <button 
+            className={styles.retakeButton}
+            onClick={() => navigate("/exam")}
+          >
+            Take New Exam
           </button>
         </div>
-      </div>
+      </Layout>
     );
   }
 
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return styles.excellent;
+    if (score >= 70) return styles.good;
+    if (score >= 50) return styles.average;
+    return styles.poor;
+  };
+
+  const getGradeEmoji = (grade: string) => {
+    switch (grade) {
+      case 'A': return '🏆';
+      case 'B': return '🌟';
+      case 'C': return '👍';
+      case 'D': return '📚';
+      default: return '💪';
+    }
+  };
+
   return (
-    <div className={styles.pageContainer}>
-      <div className={styles.cardContainer}>
-        <h2 className={styles.title}>🎉 Test Results 🎉</h2>
-        <h3 className={styles.grade}>
-          Your Grade: {grade} ({score.toFixed(2)}%)
-        </h3>
-
-        <button className={styles.button} onClick={() => setShowDetails(!showDetails)}>
-          {showDetails ? "Hide Results" : "View Results"}
-        </button>
-
-        {/* ✅ Remove results from layout when hidden */}
-        <div className={`${styles.resultsWrapper} ${showDetails ? "" : styles.hidden}`}>
-          <table className={styles.resultsTable}>
-            <thead>
-              <tr>
-                <th>Question</th>
-                <th>Your Answer</th>
-                <th>Correct Answer</th>
-                <th>Result</th>
-              </tr>
-            </thead>
-            <tbody>
-              {questions.map((q) => {
-                const userAnswer = answers[q.id] || "No answer";
-                const correctAnswer = q.correct_answer || "No answer";
-                const result = validationResults[q.id]?.status || "Incorrect";
-
-                return (
-                  <tr
-                    key={q.id}
-                    className={result === "Correct" ? styles.correctRow : styles.wrongRow}
-                  >
-                    <td>{q.question}</td>
-                    <td>{userAnswer}</td>
-                    <td>{correctAnswer}</td>
-                    <td>{result === "Correct" ? "✅ Correct" : "❌ Incorrect"}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+    <Layout activeMenu="results">
+      <div className={styles.resultsContainer}>
+        <div className={styles.resultHeader}>
+          <h2>Exam Results</h2>
+          <span className={styles.subject}>{results.subject}</span>
         </div>
 
-        <button className={styles.button} onClick={() => navigate("/")}>
-          Retry Test
-        </button>
+        <div className={styles.scoreCard}>
+          <div className={`${styles.scoreCircle} ${getScoreColor(results.score)}`}>
+            <span className={styles.scoreNumber}>{results.score}%</span>
+            <span className={styles.scoreLabel}>Score</span>
+          </div>
+
+          <div className={styles.gradeContainer}>
+            <div className={styles.gradeBox}>
+              <span className={styles.gradeEmoji}>{getGradeEmoji(results.grade)}</span>
+              <span className={styles.grade}>Grade {results.grade}</span>
+            </div>
+            <span className={`${styles.status} ${results.status === 'Passed' ? styles.passed : styles.failed}`}>
+              {results.status}
+            </span>
+          </div>
+        </div>
+
+        <div className={styles.statsGrid}>
+          <div className={styles.statBox}>
+            <span className={styles.statLabel}>Correct Answers</span>
+            <span className={styles.statValue}>{results.correct_answers}</span>
+          </div>
+          <div className={styles.statBox}>
+            <span className={styles.statLabel}>Total Questions</span>
+            <span className={styles.statValue}>{results.total_questions}</span>
+          </div>
+          <div className={styles.statBox}>
+            <span className={styles.statLabel}>Accuracy</span>
+            <span className={styles.statValue}>
+              {((results.correct_answers / results.total_questions) * 100).toFixed(1)}%
+            </span>
+          </div>
+        </div>
+
+        <div className={styles.actionButtons}>
+          <button 
+            className={styles.retakeButton}
+            onClick={() => navigate("/exam")}
+          >
+            Take Another Exam
+          </button>
+          <button 
+            className={styles.dashboardButton}
+            onClick={() => navigate("/dashboard")}
+          >
+            Back to Dashboard
+          </button>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

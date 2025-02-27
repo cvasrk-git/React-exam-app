@@ -1,0 +1,74 @@
+.layoutContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background-color: #fff;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logoutBtn {
+  padding: 0.5rem 1rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.mainContent {
+  display: flex;
+  flex: 1;
+  background-color: #f5f5f5;
+}
+
+.sideMenu {
+  width: 20%;
+  background-color: #fff;
+  padding: 2rem;
+  box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+}
+
+.sideMenu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sideMenu li {
+  margin-bottom: 1rem;
+}
+
+.sideMenu button {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sideMenu button:hover {
+  background-color: #f0f0f0;
+}
+
+.contentArea {
+  width: 80%;
+  padding: 2rem;
+  overflow-y: auto;
+}

@@ -5,8 +5,7 @@ import ExamTakingPage from "./pages/ExamTakingPage";
 import ResultsPage from "./pages/ResultsPage";
 import LoginPage from "./pages/LoginPage";
 import LoginSuccess from "./pages/LoginSuccess";
-import PrivateRoute from "./components/PrivateRoute"; // Import PrivateRoute
-import "./index.css";
+import PrivateRoute from "./components/PrivateRoute";
 
 const App: React.FC = () => {
   return (
@@ -21,6 +20,8 @@ const App: React.FC = () => {
           <Route path="/topics" element={<ExamPage />} />
           <Route path="/exam" element={<ExamTakingPage />} />
           <Route path="/results" element={<ResultsPage />} />
+          {/* Redirect root to login-success for authenticated users */}
+          <Route path="/" element={<Navigate to="/login-success" />} />
         </Route>
 
         {/* Redirect any unknown routes to login */}
