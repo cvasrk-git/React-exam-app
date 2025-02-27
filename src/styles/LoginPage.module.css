@@ -1,0 +1,67 @@
+/* 🌟 Full-screen background */
+.loginContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(to right, #3e8477, #7c88bf);
+  }
+  
+  /* 📌 Centered login box */
+  .loginBox {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    width: 320px;
+    text-align: center;
+  }
+  
+  /* 🏷 Title */
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* 🔹 Input Fields */
+  .inputField {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+  
+  /* 🔘 Login Button */
+  .loginButton {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: linear-gradient(to right, #007bff, #00c851);
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .loginButton:disabled {
+    background: gray;
+    cursor: not-allowed;
+  }
+  
+  .loginButton:hover {
+    transform: scale(1.05);
+  }
+  
+  /* 🔴 Error Message */
+  .errorMessage {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
