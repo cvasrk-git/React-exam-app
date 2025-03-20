@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { getQuestions, validateAnswers } from "../services/api";
 import Question from "./Question";
 import Results from "./Results";
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 interface QuestionType {
   id: number;
@@ -23,6 +25,7 @@ const Exam = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const loadQuestions = async () => {
         setLoading(true);
@@ -49,17 +52,34 @@ const Exam = () => {
     };
 
     const handleSubmit = async () => {
-        if (questions.length === 0) {
-            setError("No questions to submit");
-            return;
-        }
-
         try {
-            const result = await validateAnswers(answers, questions);
-            setResults(result);
+            const token = localStorage.getItem('token');
+            if (!token) {
+                navigate('/login');
+                return;
+            }
+
+            const response = await axios.post(
+                `${API_BASE_URL}/submit_exam`,
+                {
+                    questions: questions,
+                    answers: answers
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (response.data.exam_id) {
+                // Redirect to exam detail page
+                navigate(`/exam-detail/${response.data.exam_id}`);
+            }
         } catch (error) {
-            console.error("Error submitting answers:", error);
-            setError("Failed to submit answers. Please try again.");
+            console.error('Error submitting exam:', error);
+            setError('Failed to submit exam');
         }
     };
 

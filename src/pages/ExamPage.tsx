@@ -93,9 +93,21 @@ const ExamPage: React.FC = () => {
           <textarea
             className={styles.topicInput}
             value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
+            onChange={(e) => {
+              setPrompt(e.target.value);
+              // Auto-resize textarea
+              e.target.style.height = '70px'; // Default height
+              e.target.style.height = `${Math.min(e.target.scrollHeight, 200)}px`; // Limit max height
+            }}
             placeholder="Example: JavaScript Arrays and Objects..."
-            rows={4}
+            rows={3}
+            style={{ width: '799px', height: '70px' }} // Added default style
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                fetchQuestions();
+              }
+            }}
           />
           {error && <div className={styles.errorMessage}>{error}</div>}
           <button 
