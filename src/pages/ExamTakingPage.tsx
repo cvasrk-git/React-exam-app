@@ -125,8 +125,28 @@ const ExamTakingPage: React.FC = () => {
     if (!currentQuestionData) return null;
 
     switch (currentQuestionData.type) {
-      case 'mcq':
       case 'true_false':
+        return (
+          <div className={styles.optionsGrid}>
+            {['True', 'False'].map((option, index) => (
+              <button
+                key={index}
+                className={`${styles.optionButton} ${
+                  answers[currentQuestion] === option ? styles.selectedOption : ''
+                }`}
+                onClick={() => {
+                  const newAnswers = [...answers];
+                  newAnswers[currentQuestion] = option;
+                  setAnswers(newAnswers);
+                }}
+              >
+                {String.fromCharCode(65 + index)}. {option}
+              </button>
+            ))}
+          </div>
+        );
+
+      case 'mcq':
         return (
           <div className={styles.optionsGrid}>
             {currentQuestionData.options?.map((option, index) => (
