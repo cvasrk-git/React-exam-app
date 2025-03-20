@@ -3,13 +3,15 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/LoginPage.module.css";
 
-const API_BASE_URL = "http://localhost:5000"; // Backend URL
+const API_BASE_URL = "http://localhost:5000";
 
 const LoginPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -27,15 +29,16 @@ const LoginPage: React.FC = () => {
       }
 
       const endpoint = isLogin ? "/login" : "/register";
-      const response = await axios.post(`${API_BASE_URL}${endpoint}`, {
-        email,
-        password,
-      });
+      const payload = isLogin 
+        ? { email, password }
+        : { email, password, first_name: firstName, last_name: lastName };
+
+      const response = await axios.post(`${API_BASE_URL}${endpoint}`, payload);
 
       if (isLogin) {
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
-          localStorage.setItem("user", JSON.stringify({ email }));
+          localStorage.setItem("user", JSON.stringify(response.data.user));
           navigate("/login-success");
         }
       } else {
@@ -43,6 +46,8 @@ const LoginPage: React.FC = () => {
         setIsLogin(true);
         setPassword("");
         setConfirmPassword("");
+        setFirstName("");
+        setLastName("");
       }
     } catch (err: any) {
       const errorMessage = err.response?.data?.error || err.message || "An error occurred";
@@ -57,82 +62,78 @@ const LoginPage: React.FC = () => {
       <div className={styles.loginBox}>
         <h2 className={styles.title}>{isLogin ? "Login" : "Register"}</h2>
         
-        {successMessage && (
-          <p className={styles.successMessage}>{successMessage}</p>
-        )}
-        
         <form onSubmit={handleSubmit}>
           <input
             type="email"
+            className={styles.inputField}
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={styles.inputField}
             required
           />
-          
+
+          {!isLogin && (
+            <>
+              <input
+                type="text"
+                className={styles.inputField}
+                placeholder="First Name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                className={styles.inputField}
+                placeholder="Last Name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+            </>
+          )}
+
           <input
             type="password"
+            className={styles.inputField}
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={styles.inputField}
             required
           />
 
           {!isLogin && (
             <input
               type="password"
+              className={styles.inputField}
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className={styles.inputField}
               required
             />
           )}
 
+          {error && <div className={styles.errorMessage}>{error}</div>}
+          {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
+
           <button 
             type="submit" 
-            className={styles.loginButton} 
+            className={styles.loginButton}
             disabled={loading}
           >
-            {loading ? "Processing..." : (isLogin ? "Login" : "Register")}
+            {loading ? "Please wait..." : (isLogin ? "Login" : "Register")}
           </button>
+
+          <div className={styles.switchMode}>
+            <button
+              type="button"
+              className={styles.switchButton}
+              onClick={() => setIsLogin(!isLogin)}
+            >
+              {isLogin ? "Need an account? Register" : "Already have an account? Login"}
+            </button>
+          </div>
         </form>
-
-        {error && <p className={styles.errorMessage}>{error}</p>}
-
-        <div className={styles.switchMode}>
-          {isLogin ? (
-            <p>
-              Don't have an account?{" "}
-              <button 
-                className={styles.switchButton}
-                onClick={() => {
-                  setIsLogin(false);
-                  setError("");
-                  setSuccessMessage("");
-                }}
-              >
-                Register here
-              </button>
-            </p>
-          ) : (
-            <p>
-              Already have an account?{" "}
-              <button 
-                className={styles.switchButton}
-                onClick={() => {
-                  setIsLogin(true);
-                  setError("");
-                  setSuccessMessage("");
-                }}
-              >
-                Login here
-              </button>
-            </p>
-          )}
-        </div>
       </div>
     </div>
   );
