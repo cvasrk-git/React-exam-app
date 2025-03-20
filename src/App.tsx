@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import LoginSuccess from "./pages/LoginSuccess";
 import PrivateRoute from "./components/PrivateRoute";
 import ExamDetailPage from './pages/ExamDetailPage';
+import ProfilePage from './pages/ProfilePage';
 
 const App: React.FC = () => {
   return (
@@ -22,6 +23,7 @@ const App: React.FC = () => {
           <Route path="/exam" element={<ExamTakingPage />} />
           <Route path="/results" element={<ResultsPage />} />
           <Route path="/exam-detail/:examId" element={<ExamDetailPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           {/* Redirect root to login-success for authenticated users */}
           <Route path="/" element={<Navigate to="/login-success" />} />
         </Route>
@@ -34,4 +36,5 @@ const App: React.FC = () => {
 };
 
 export default App;
+
 
