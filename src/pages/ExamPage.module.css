@@ -65,4 +65,37 @@
     font-size: 14px;
     margin-top: 10px;
   }
+
+  .promptInstructions {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    color: #495057;
+  }
+
+  .promptInstructions ul {
+    margin: 8px 0;
+    padding-left: 20px;
+  }
+
+  .promptInstructions ul ul {
+    margin: 4px 0;
+  }
+
+  .examples {
+    color: #6c757d;
+    font-style: italic;
+  }
+
+  .examples li {
+    margin: 4px 0;
+  }
+
+  .instruction {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #212529;
+  }
   

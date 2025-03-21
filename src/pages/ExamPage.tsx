@@ -19,6 +19,7 @@ const ExamPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [showInstructions, setShowInstructions] = useState(false);
   const navigate = useNavigate();
 
   // Check authentication on component mount
@@ -88,20 +89,70 @@ const ExamPage: React.FC = () => {
         <h2>Start New Exam</h2>
         <div className={styles.examSetup}>
           <p className={styles.instruction}>
-            Enter the topic you would like to be tested on:
+            Enter the topic you would like to be tested on 
+            <button 
+              onClick={() => setShowInstructions(!showInstructions)}
+              className={styles.instructionsLink}
+            >
+              {showInstructions ? '(Hide Instructions)' : '(Show Instructions)'}
+            </button>
           </p>
+          
+          {showInstructions && (
+            <div className={`${styles.promptInstructions} ${styles.slideDown}`}>
+              <div className={styles.instructionsHeader}>
+                <h3>How to Format Your Prompt</h3>
+                <button 
+                  className={styles.closeButton}
+                  onClick={() => setShowInstructions(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <p>Your prompt should include:</p>
+              <ul>
+                <li><strong>Subject:</strong> Specify a subject (e.g., Python, JavaScript, Mathematics, Physics)</li>
+                <li>
+                  <strong>Difficulty Level:</strong> Include one of these words:
+                  <ul>
+                    <li><em>Basic:</em> For fundamental concepts (also: beginner, elementary, easy)</li>
+                    <li><em>Intermediate:</em> For moderate difficulty (also: medium, regular)</li>
+                    <li><em>Advanced:</em> For complex topics (also: expert, difficult, challenging)</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Question Type:</strong> Specify one type:
+                  <ul>
+                    <li>"multiple choice" or "mcq"</li>
+                    <li>"true/false"</li>
+                    <li>"short answer"</li>
+                    <li>"coding"</li>
+                    <li>"essay"</li>
+                  </ul>
+                </li>
+              </ul>
+              <div className={styles.examplesSection}>
+                <h4>Example Prompts:</h4>
+                <ul className={styles.examples}>
+                  <li>"Generate basic multiple choice questions about Python loops and conditionals"</li>
+                  <li>"Create advanced coding questions about JavaScript promises and async/await"</li>
+                  <li>"Make intermediate true/false questions about React components"</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
           <textarea
             className={styles.topicInput}
             value={prompt}
             onChange={(e) => {
               setPrompt(e.target.value);
-              // Auto-resize textarea
-              e.target.style.height = '70px'; // Default height
-              e.target.style.height = `${Math.min(e.target.scrollHeight, 200)}px`; // Limit max height
+              e.target.style.height = '70px';
+              e.target.style.height = `${Math.min(e.target.scrollHeight, 200)}px`;
             }}
-            placeholder="Example: JavaScript Arrays and Objects..."
+            placeholder="Example: Generate intermediate multiple choice questions about JavaScript Arrays and Objects..."
             rows={3}
-            style={{ width: '799px', height: '70px' }} // Added default style
+            style={{ width: '799px', height: '70px' }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();

@@ -287,4 +287,116 @@ il.logoutBtn {
 .noResults button {
   margin-top: 1rem;
 }
+
+.instructionsLink {
+  background: none;
+  border: none;
+  color: #96c93d; /* Changed to match the gradient color from primaryButton */
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 0.9em;
+  padding: 0;
+}
+
+.instructionsLink:hover {
+  color: #00b09b; /* Changed to match the gradient color from primaryButton */
+}
+
+.promptInstructions {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 10px 0 20px;
+  position: relative;
+  animation: slideDown 0.3s ease-out;
+  color: white; /* Ensuring text is visible */
+}
+
+.instructionsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.instructionsHeader h3 {
+  margin: 0;
+  color: white;
+  font-size: 1.1em;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.closeButton:hover {
+  color: white;
+}
+
+.promptInstructions ul {
+  margin: 8px 0;
+  padding-left: 20px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.promptInstructions ul ul {
+  margin: 4px 0;
+}
+
+.promptInstructions li {
+  margin: 8px 0;
+}
+
+.promptInstructions strong {
+  color: white;
+  font-weight: 600;
+}
+
+.promptInstructions em {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.examplesSection {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.examplesSection h4 {
+  margin: 0 0 10px 0;
+  color: white;
+  font-size: 1em;
+}
+
+.examples {
+  color: rgba(255, 255, 255, 0.8);
+  font-style: italic;
+}
+
+.examples li {
+  margin: 8px 0;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slideDown {
+  animation: slideDown 0.3s ease-out;
+}
   
